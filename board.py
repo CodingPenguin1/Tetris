@@ -46,26 +46,31 @@ class Board:
         return_message = ''
 
         if not self.game_over:
-            # Move left
-            if keycode in [97, 104, 260]:  # 'a', 'h', and left
+            # Move left/right
+            if keycode in [97, 104, 260, 100, 108, 261]:  # 'a', 'h', left, 'd', 'l', down
                 # Generate next coords
                 next_coords = [c.copy() for c in self.current_piece['coords']]
                 for i in range(len(next_coords)):
-                    next_coords[i][1] -= 1
+                    # For moving left
+                    if keycode in [97, 104, 260]:
+                        next_coords[i][1] -= 1
+                    # For moving right
+                    else:
+                        next_coords[i][1] += 1
 
                 # Check if next coords are open
                 next_coords_blocked = False
                 for c in next_coords:
                     # Check if move is blocked by a wall
-                    if c[1] < 0:
+                    if c[1] < 0 or c[1] >= self.width:
                         next_coords_blocked = True
-                        return_message = f'Left move blocked by wall {self.current_piece["coords"]}'
+                        return_message = f'Move blocked by wall {self.current_piece["coords"]}'
                         break
                     # Only check new spaces, see if move is blocked by a piece
                     if [c[0], c[1]] not in self.current_piece['coords']:
                         if self.grid[c[0]][c[1]] != 0:
                             next_coords_blocked = True
-                            return_message = 'Left move blocked by piece'
+                            return_message = 'Move blocked by piece'
                             break
 
                 # If coords aren't blocked, move the piece left to next_coords
