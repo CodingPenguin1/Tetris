@@ -49,7 +49,7 @@ class Board:
             # Move left
             if keycode in [97, 104, 260]:  # 'a', 'h', and left
                 # Generate next coords
-                next_coords = self.current_piece['coords'].copy()
+                next_coords = [c.copy() for c in self.current_piece['coords']]
                 for i in range(len(next_coords)):
                     next_coords[i][1] -= 1
 
@@ -72,7 +72,7 @@ class Board:
                 if not next_coords_blocked:
                     # Delete old piece
                     for c in self.current_piece['coords']:
-                        self.grid[c[0]][c[1] + 1] = 0
+                        self.grid[c[0]][c[1]] = 0
                     # Overwrite coords
                     self.current_piece['coords'] = next_coords.copy()
                     # Place new piece
@@ -109,25 +109,27 @@ class Board:
             # If we didn't just summon a new piece, drop the current piece down 1 row
             else:
                 # Generate next coords
-                next_coords = self.current_piece['coords'].copy()
+                next_coords = [c.copy() for c in self.current_piece['coords']]
                 for i in range(len(next_coords)):
                     next_coords[i][0] += 1
 
                 # Check if next coords are open
                 next_coords_blocked = False
                 for c in next_coords:
-                    if c[0] < self.height:
-                        if self.grid[c[0]][c[1]] != 0:
+                    # Only check new cells
+                    if c not in self.current_piece['coords']:
+                        if c[0] < self.height:
+                            if self.grid[c[0]][c[1]] != 0:
+                                next_coords_blocked = True
+                                break
+                        else:
                             next_coords_blocked = True
-                            break
-                    else:
-                        next_coords_blocked = True
 
                 # If coords aren't blocked, move the piece down to next_coords
                 if not next_coords_blocked:
                     # Delete old piece
                     for c in self.current_piece['coords']:
-                        self.grid[c[0] - 1][c[1]] = 0
+                        self.grid[c[0]][c[1]] = 0
                     # Overwrite coords
                     self.current_piece['coords'] = next_coords.copy()
                     # Place new piece
